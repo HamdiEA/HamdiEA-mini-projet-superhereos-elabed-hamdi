@@ -1,0 +1,14 @@
+{
+  "name": "superhero-manager",
+  "version": "1.0.0",
+  "description": "Full-stack superhero management application",
+  "scripts": {
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently &quot;cd backend && npm run dev&quot; &quot;cd frontend && npm run dev&quot;",
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd frontend && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
