@@ -27,20 +27,7 @@ export const auth = async (req: AuthRequest, res: Response, next: NextFunction):
     
     let user;
     
-    // Use mock data if MongoDB is not connected
-    if (!isMongoConnected()) {
-      user = mockUsers.find(u => u._id === decoded.userId);
-    } else {
-      user = await User.findById(decoded.userId).select('-passwordHash');
-    }
     
-    if (!user) {
-      res.status(401).json({ message: 'Token is not valid' });
-      return;
-    }
-
-    req.user = user;
-    next();
   } catch (error) {
     res.status(401).json({ message: 'Token is not valid' });
   }
