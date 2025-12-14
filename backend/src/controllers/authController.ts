@@ -23,52 +23,6 @@ export const register = async (req: AuthRequest, res: Response): Promise<void> =
 
     const { username, name, email, password, role } = req.body;
 
-    // Use mock data if MongoDB is not connected
-    if (!isMongoConnected()) {
-      // Check if user already exists in mock data
-      const existingUser = mockUsers.find(u => u.username === username || u.email === email);
-      if (existingUser) {
-        res.status(400).json({ message: 'User already exists' });
-        return;
-      }
-
-      // Hash password
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash(password, salt);
-
-      // Create new user in mock data - Public users default to 'viewer' role
-      const newUser = {
-        _id: Date.now().toString(),
-        username,
-        name,
-        email,
-        passwordHash,
-        role: role || 'viewer', // Default to viewer for public registration
-        createdAt: new Date()
-      };
-
-      mockUsers.push(newUser);
-
-      // Generate JWT
-      const token = jwt.sign(
-        { userId: newUser._id },
-        process.env.JWT_SECRET!,
-        { expiresIn: '24h' }
-      );
-
-      res.status(201).json({
-        message: 'User registered successfully',
-        token,
-        user: {
-          id: newUser._id,
-          username: newUser.username,
-          name: newUser.name,
-          email: newUser.email,
-          role: newUser.role
-        }
-      });
-      return;
-    }
 
     // MongoDB operations when connected
     const existingUser = await User.findOne({ 
@@ -130,7 +84,6 @@ export const login = async (req: AuthRequest, res: Response): Promise<void> => {
         return;
       }
 
-      // For demo, check against hardcoded passwords for default users
       // In a real app, all passwords would be properly hashed
       let validPassword = false;
       if (username === 'admin' && password === 'admin123') {
@@ -245,13 +198,8 @@ export const getCurrentUser = async (req: AuthRequest, res: Response): Promise<v
 
 // Get users count (public endpoint)
 export const getUsersCount = async (req: AuthRequest, res: Response): Promise<void> => {
-  try {
-    // Use mock data if MongoDB is not connected
-    if (!isMongoConnected()) {
-      res.json({ count: mockUsers.length });
-      return;
-    }
 
+    
     // MongoDB query when connected
     const count = await User.countDocuments();
     res.json({ count });
