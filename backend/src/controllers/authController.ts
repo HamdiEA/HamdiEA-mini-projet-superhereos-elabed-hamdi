@@ -60,9 +60,7 @@ export const register = async (req: AuthRequest, res: Response): Promise<void> =
         role: user.role
       }
     });
-  } catch (error) {
-    res.status(500).json({ message: 'Error registering user', error });
-  }
+
 };
 
 // Login user
