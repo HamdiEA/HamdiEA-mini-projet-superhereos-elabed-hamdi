@@ -71,21 +71,7 @@ export const getHeroes = async (req: AuthRequest, res: Response): Promise<void> 
 
 // Get hero by ID
 export const getHeroById = async (req: AuthRequest, res: Response): Promise<void> => {
-  try {
-    // Use mock data if MongoDB is not connected
-    if (!isMongoConnected()) {
-      const hero = mockHeroes.find((h: any) => h._id === req.params.id);
-      
-      if (!hero) {
-        res.status(404).json({ message: 'Hero not found' });
-        return;
-      }
-      
-      res.json(hero);
-      return;
-    }
     
-    // MongoDB query when connected
     const hero = await Hero.findById(req.params.id);
     
     if (!hero) {
@@ -94,9 +80,7 @@ export const getHeroById = async (req: AuthRequest, res: Response): Promise<void
     }
     
     res.json(hero);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching hero', error });
-  }
+  
 };
 
 // Create new hero
@@ -113,19 +97,7 @@ export const createHero = async (req: AuthRequest, res: Response): Promise<void>
     
     heroData.image = req.file ? `/uploads/${req.file.filename}` : '';
     
-    // Use mock data if MongoDB is not connected
-    if (!isMongoConnected()) {
-      const newHero = {
-        _id: Date.now().toString(),
-        ...heroData,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      
-      mockHeroes.push(newHero);
-      res.status(201).json(newHero);
-      return;
-    }
+  
     
     // MongoDB query when connected
     const hero = new Hero(heroData);
