@@ -151,25 +151,7 @@ export const updateHero = async (req: AuthRequest, res: Response): Promise<void>
       updateData.image = `/uploads/${req.file.filename}`;
     }
     
-    // Use mock data if MongoDB is not connected
-    if (!isMongoConnected()) {
-      const index = mockHeroes.findIndex((h: any) => h._id === req.params.id);
-      
-      if (index === -1) {
-        res.status(404).json({ message: 'Hero not found' });
-        return;
-      }
-      
-      const updatedHero = {
-        ...mockHeroes[index],
-        ...updateData,
-        updatedAt: new Date()
-      };
-      
-      mockHeroes[index] = updatedHero;
-      res.json(updatedHero);
-      return;
-    }
+  
     
     // MongoDB query when connected
     if (req.file) {
@@ -202,20 +184,7 @@ export const updateHero = async (req: AuthRequest, res: Response): Promise<void>
 
 // Delete hero
 export const deleteHero = async (req: AuthRequest, res: Response): Promise<void> => {
-  try {
-    // Use mock data if MongoDB is not connected
-    if (!isMongoConnected()) {
-      const index = mockHeroes.findIndex((h: any) => h._id === req.params.id);
-      
-      if (index === -1) {
-        res.status(404).json({ message: 'Hero not found' });
-        return;
-      }
-      
-      mockHeroes.splice(index, 1);
-      res.json({ message: 'Hero deleted successfully' });
-      return;
-    }
+  
     
     // MongoDB query when connected
     const hero = await Hero.findByIdAndDelete(req.params.id);
@@ -234,7 +203,5 @@ export const deleteHero = async (req: AuthRequest, res: Response): Promise<void>
     }
     
     res.json({ message: 'Hero deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting hero', error });
-  }
+ 
 };
